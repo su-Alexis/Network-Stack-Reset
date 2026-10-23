@@ -8,6 +8,12 @@ Windows reloads the network stack. The script says so, and offers to restart for
 you. If you want a fix that works without rebooting, see
 [Network Refresh](#if-you-dont-want-to-reboot) instead.
 
+This is the standalone copy of the `net-reset-reboot.bat` that
+[winGG10&11](https://github.com/su-Alexis/winGG10-11) writes to the Desktop. The two
+are kept byte-identical: if they ever differ, the copy embedded in winGG10&11 is the
+current one. winGG10&11 also runs it once as `net-reset-reboot.bat /y /none` (reset,
+no prompt, no reboot) and leaves the restart to the end of its own run.
+
 ---
 
 ## Usage
@@ -149,9 +155,19 @@ usually the reason you are running this in the first place.
 
 ## If you don't want to reboot
 
-**Network Refresh** is the smaller sibling: it flushes the caches and renews the
+[Network Refresh](https://github.com/su-Alexis/Network-Refresh)
+(`net-reset-lite.bat`) is the smaller sibling: it flushes the caches and renews the
 DHCP leases, and deliberately excludes the three commands that need a restart.
 Try that first — if it does not fix the problem, this script is the next step up.
+
+## Related tools
+
+- [winGG10&11](https://github.com/su-Alexis/winGG10-11): the Windows setup script
+  that deploys this and the other two tools.
+- [Windows Cleanup](https://github.com/su-Alexis/Windows-Cleanup)
+  (`cleanup_main.bat`): scan-first temp, cache and memory cleanup.
+- [Network Refresh](https://github.com/su-Alexis/Network-Refresh)
+  (`net-reset-lite.bat`): clears network caches and renews leases, no reboot.
 
 ## Requirements
 
