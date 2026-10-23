@@ -116,15 +116,27 @@ goto :menu
 :nomenu
 
 rem ---------- re-launch as administrator if needed ----------------------
+rem  The path and the arguments get embedded in a single-quoted PowerShell
+rem  string below, so a single quote in either one would end that string
+rem  early - a folder like C:\Users\Bob's PC breaks the launch outright,
+rem  and an argument could inject PowerShell of its own. PowerShell escapes
+rem  a quote inside a single-quoted string by doubling it, so do that.
+rem  The "if defined" guard is not decorative: on an undefined variable cmd
+rem  does not perform the substitution at all and leaks the literal text,
+rem  and the substitution has to be !delayed! so it happens after the guard.
+set "PSSCRIPT=%SCRIPT:'=''%"
+set "PSARGS="
+if defined RELAUNCH set "PSARGS=!RELAUNCH:'=''!"
+
 rem  /verify only reads, and /dryrun only prints, so neither needs elevating
 if "%DRYRUN%"=="0" if "%VERIFY%"=="0" (
     net session >nul 2>&1
     if errorlevel 1 (
         echo Administrator rights are required - re-launching elevated...
-        if "!RELAUNCH!"=="" (
-            powershell -NoProfile -Command "try { Start-Process -FilePath '!SCRIPT!' -Verb RunAs -ErrorAction Stop } catch { exit 1 }"
+        if not defined PSARGS (
+            powershell -NoProfile -Command "try { Start-Process -FilePath '!PSSCRIPT!' -Verb RunAs -ErrorAction Stop } catch { exit 1 }"
         ) else (
-            powershell -NoProfile -Command "try { Start-Process -FilePath '!SCRIPT!' -ArgumentList '!RELAUNCH!' -Verb RunAs -ErrorAction Stop } catch { exit 1 }"
+            powershell -NoProfile -Command "try { Start-Process -FilePath '!PSSCRIPT!' -ArgumentList '!PSARGS!' -Verb RunAs -ErrorAction Stop } catch { exit 1 }"
         )
         if errorlevel 1 (
             echo.
